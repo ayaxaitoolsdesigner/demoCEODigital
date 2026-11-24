@@ -1,0 +1,126 @@
+---
+import { sitio } from '../config/sitio';
+import { CAMPOS, LIMITES } from '../lib/contacto/validacion';
+
+const { contacto, turnstileSiteKey } = sitio;
+const hayError = Astro.url.searchParams.get('error') === '1';
+---
+
+<section id="contacto" class="seccion contacto" aria-labelledby="titulo-contacto">
+  <div class="contenedor contacto__rejilla">
+    <div>
+      <h2 id="titulo-contacto">{contacto.titulo}</h2>
+      <p class="contacto__texto">{contacto.texto}</p>
+    </div>
+
+    <form
+      class="formulario"
+      method="post"
+      action="/api/contacto"
+      novalidate
+      data-formulario-contacto
+      data-mensaje-exito={contacto.mensajeExito}
+    >
+      <div class="campo">
+        <label for="f-nombre">Nombre</label>
+        <input
+          id="f-nombre"
+          name={CAMPOS.nombre}
+          type="text"
+          autocomplete="name"
+          required
+          minlength={LIMITES.nombreMin}
+          maxlength={LIMITES.nombreMax}
+          aria-describedby="error-nombre"
+        />
+        <p class="campo__error" id="error-nombre" data-error-de={CAMPOS.nombre}></p>
+      </div>
+
+      <div class="campo">
+        <label for="f-email">Email</label>
+        <input
+          id="f-email"
+          name={CAMPOS.email}
+          type="email"
+          autocomplete="email"
+          inputmode="email"
+          required
+          maxlength={LIMITES.emailMax}
+          aria-describedby="error-email"
+        />
+        <p class="campo__error" id="error-email" data-error-de={CAMPOS.email}></p>
+      </div>
+
+      <div class="campo">
+        <label for="f-mensaje">¿En qué puedo ayudarte?</label>
+        <textarea
+          id="f-mensaje"
+          name={CAMPOS.mensaje}
+          rows="5"
+          required
+          minlength={LIMITES.mensajeMin}
+          maxlength={LIMITES.mensajeMax}
+          aria-describedby="error-mensaje"></textarea>
+        <p class="campo__error" id="error-mensaje" data-error-de={CAMPOS.mensaje}></p>
+      </div>
+
+      <!-- Trampa para bots (honeypot): invisible para personas y lectores de pantalla. -->
+      <div class="trampa" aria-hidden="true">
+        <label for="f-web">No rellenes este campo</label>
+        <input id="f-web" name={CAMPOS.trampa} type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <input type="hidden" name={CAMPOS.inicio} value="" data-marca-tiempo />
+
+      <div class="campo campo--casilla">
+        <input id="f-consentimiento" name={CAMPOS.consentimiento} type="checkbox" required aria-describedby="error-consentimiento" />
+        <label for="f-consentimiento">
+          He leído la <a href="/privacidad">política de privacidad</a> y acepto que uséis mis datos solo para responderme.
+        </label>
+        <p class="campo__error" id="error-consentimiento" data-error-de={CAMPOS.consentimiento}></p>
+      </div>
+
+      {turnstileSiteKey && <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-language="es"></div>}
+
+      <button class="boton boton--principal" type="submit">{contacto.textoBoton}</button>
+
+      <p class="formulario__estado" role="status" aria-live="polite" data-estado>
+        {hayError && 'No hemos podido enviar tu mensaje. Revisa los datos e inténtalo de nuevo.'}
+      </p>
+    </form>
+  </div>
+</section>
+
+{turnstileSiteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+
+<script>
+  import { enviarFormulario } from '../lib/contacto/cliente';
+
+  const formulario = document.querySelector<HTMLFormElement>('[data-formulario-contacto]');
+  if (formulario) enviarFormulario(formulario);
+</script>
+
+<style>
+  .contacto { background: var(--color-superficie); border-top: 1px solid var(--color-borde); }
+  .contacto__rejilla { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); align-items: start; }
+  .contacto h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); }
+  .contacto__texto { color: var(--color-texto-suave); }
+  .formulario { display: grid; gap: 1.1rem; }
+  .campo { display: grid; gap: 0.35rem; }
+  .campo label { font-weight: 600; }
+  .campo input[type='text'], .campo input[type='email'], .campo textarea {
+    font: inherit; padding: 0.75rem 0.9rem; border: 1.5px solid var(--color-borde);
+    border-radius: var(--radio); background: var(--color-fondo); color: var(--color-texto); width: 100%;
+  }
+  .campo textarea { resize: vertical; min-height: 8rem; }
+  .campo [aria-invalid='true'] { border-color: var(--color-error); }
+  .campo__error { color: var(--color-error); font-size: 0.9rem; margin: 0; min-height: 0; }
+  .campo__error:empty { display: none; }
+  .campo--casilla { grid-template-columns: auto 1fr; align-items: start; column-gap: 0.6rem; }
+  .campo--casilla input { width: 1.25rem; height: 1.25rem; margin-top: 0.2rem; accent-color: var(--color-acento); }
+  .campo--casilla label { font-weight: 400; font-size: 0.95rem; }
+  .campo--casilla .campo__error { grid-column: 1 / -1; }
+  .trampa { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .formulario__estado { margin: 0; font-weight: 600; }
+  .formulario__estado[data-tipo='exito'] { color: var(--color-exito); }
+  .formulario__estado[data-tipo='error'] { color: var(--color-error); }
+</style>

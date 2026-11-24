@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import Pie from '../components/Pie.astro';
+import { sitio } from '../config/sitio';
+---
+
+<Base titulo={`Gracias · ${sitio.nombre}`} noIndexar>
+  <section class="seccion contenedor">
+    <h1>Gracias por escribir</h1>
+    <p>{sitio.contacto.mensajeExito}</p>
+    <a class="boton boton--secundario" href="/">Volver al inicio</a>
+  </section>
+  <Pie slot="pie" />
+</Base>

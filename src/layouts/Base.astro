@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+import { sitio } from '../config/sitio';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  /** true en páginas que no deben salir en Google (gracias, 404). */
+  noIndexar?: boolean;
+}
+
+const { titulo = sitio.seo.titulo, descripcion = sitio.seo.descripcion, noIndexar = false } = Astro.props;
+const urlCanonica = new URL(Astro.url.pathname, Astro.site ?? sitio.url).href;
+---
+
+<!doctype html>
+<html lang={sitio.idioma}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={urlCanonica} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    {noIndexar && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={urlCanonica} />
+    <meta property="og:locale" content="es_ES" />
+  </head>
+  <body>
+    <a class="saltar" href="#principal">Saltar al contenido</a>
+    <main id="principal">
+      <slot />
+    </main>
+    <slot name="pie" />
+  </body>
+</html>

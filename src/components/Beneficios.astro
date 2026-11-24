@@ -1,0 +1,36 @@
+---
+import { sitio } from '../config/sitio';
+const { beneficios } = sitio;
+---
+
+<section id="beneficios" class="seccion beneficios" aria-labelledby="titulo-beneficios">
+  <div class="contenedor">
+    <h2 id="titulo-beneficios">{beneficios.titulo}</h2>
+    <ol class="beneficios__lista">
+      {
+        beneficios.lista.map((item) => (
+          <li class="beneficios__item">
+            <h3>{item.titulo}</h3>
+            <p>{item.texto}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .beneficios { border-top: 1px solid var(--color-borde); }
+  .beneficios h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); margin-bottom: 2rem; }
+  .beneficios__lista {
+    list-style: none; padding: 0; margin: 0; counter-reset: b;
+    display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+  .beneficios__item { counter-increment: b; }
+  .beneficios__item::before {
+    content: '0' counter(b); display: block; font-family: var(--fuente-titulos);
+    font-size: 1.25rem; color: var(--color-acento); margin-bottom: 0.5rem;
+  }
+  .beneficios__item h3 { font-size: 1.3rem; }
+  .beneficios__item p { color: var(--color-texto-suave); }
+</style>

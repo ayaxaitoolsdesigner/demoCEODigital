@@ -1,0 +1,13 @@
+// Configuración de Cloudflare Workers. Normalmente NO tienes que tocar nada.
+// Solo cambia "name" si quieres otro nombre (sale en la URL: nombre.tu-cuenta.workers.dev).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "mi-landing",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // Para ver errores del formulario en el panel: Workers > mi-landing > Logs.
+  "observability": { "enabled": true },
+  // Variables NO secretas. Las secretas (RESEND_API_KEY, emails, Turnstile)
+  // se añaden en el panel: Settings > Variables and Secrets > Add > tipo "Secret".
+  "vars": {}
+}
